@@ -1006,7 +1006,7 @@ const BG=[[Hz.E5,.15],[Hz.E5,.15],[Hz.G5,.3],[Hz.E5,.15],[Hz.D5,.15],[Hz.C5,.3],
  [Hz.C5,.15],[Hz.D5,.15],[Hz.E5,.15],[Hz.C5,.15],[Hz.D5,.3],
  [Hz.B4,.15],[Hz.C5,.15],[Hz.D5,.15],[Hz.B4,.15],[Hz.C5,.6],0];
 const WIN=[[Hz.C5,.1],[Hz.E5,.1],[Hz.G5,.1],[Hz.C6,.3],[Hz.G5,.15],[Hz.C6,.5]];
-const FAIL_M=[[Hz.G4,.15],[Hz.F4,.15],[Hz.E4,.15],[Hz.D4,.15],[Hz.C4,.5]];
+const FAIL_M=[[Hz.C5,.2],[Hz.A4,.2],[Hz.G4,.4]];
 const OK_M=[[Hz.E5,.08],[Hz.G5,.08],[Hz.C6,.18]];
 const ERR_M=[[Hz.A4,.1],[Hz.E4,.22]];
 function initAC(){if(AC)return;try{AC=new(window.AudioContext||window.webkitAudioContext)();
@@ -1589,19 +1589,6 @@ function spawnCosmosStars(containerId,count){
     document.head.appendChild(st);}}
 
 // Web-Audio crack/crunch sound
-function playCrack(){
-  initAC();if(!AC)return;
-  const t=AC.currentTime;
-  [0,.08,.18,.3,.44].forEach((dt,i)=>{
-    const buf=AC.createBuffer(1,AC.sampleRate*.07,AC.sampleRate);
-    const d=buf.getChannelData(0);
-    for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/d.length,2);
-    const src=AC.createBufferSource();
-    src.buffer=buf;
-    const g=AC.createGain();g.gain.value=.55-i*.08;
-    src.connect(g);g.connect(AC.destination);
-    src.start(t+dt);});}
-
 // ════════════════════════════════
 //  BIRTH
 // ════════════════════════════════
@@ -1618,10 +1605,9 @@ function startBirth(){
   // Start rocking harder just before crack
   setTimeout(()=>{
     ew.className='crack';
-    playCrack();
   },1800);
   setTimeout(()=>{
-    ew.className='crack';playCrack();
+    ew.className='crack';
   },2300);
   setTimeout(()=>{ew.className='gone';},2900);
   setTimeout(()=>{
