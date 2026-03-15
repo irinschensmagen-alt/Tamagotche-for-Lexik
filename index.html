@@ -984,10 +984,7 @@ body{background:linear-gradient(135deg,var(--bg),#EEF4FF);color:var(--tx);}
   </div>
 </div>
 
-<!-- AUDIO -->
-<audio id="aok" src="https://cdn.jsdelivr.net/gh/irinschensmagen-alt/Tamagotchi-for-Lexik@main/%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D0%BE%D1%82%D0%B2%D0%B5%D1%82%20%D0%B7%D0%B2%D1%83%D0%BA.mp3" preload="auto"></audio>
-<audio id="abirth" src="https://cdn.jsdelivr.net/gh/irinschensmagen-alt/Tamagotchi-for-Lexik@main/%D0%97%D0%B2%D1%83%D0%BA%20%D1%80%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%A2%D0%B0%D0%BC%D0%B0%D0%B3%D0%BE%D1%87%D0%B8.mp3" preload="auto"></audio>
-<audio id="aend" src="https://cdn.jsdelivr.net/gh/irinschensmagen-alt/Tamagotchi-for-Lexik@main/%D0%97%D0%B2%D1%83%D0%BA%20%D0%BE%D0%BA%D0%BE%D0%BD%D1%87%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%B8%D0%B3%D1%80%D1%8B.wav" preload="auto"></audio>
+<!-- No external audio files — all sounds are synthesized via WebAudio -->
 
 <script>
 'use strict';
@@ -1035,11 +1032,20 @@ function stopMusic(){
 function toggleMusic(){melOn?stopMusic():startMusic();}
 function updMW(){document.getElementById('mw-btn').textContent=melOn?'⏸ Пауза':'▶ Музыка';
   document.getElementById('mw-st').textContent=melOn?'♩ ♪ ♫':'— тихо —';}
-function sfx(id){try{const a=document.getElementById(id);a.currentTime=0;a.play().catch(()=>{});}catch(e){}}
-function playOK(){initAC();seq(OK_M,.4);sfx('aok');}
-function playErr(){initAC();seq(ERR_M,.3);}
-function playWin(){initAC();seq(WIN,.4);}
-function playFail(){initAC();seq(FAIL_M,.3);}
+function sfx(){/* external audio removed — all sounds synthesized */}
+// Birth fanfare: rising sparkle arpeggio
+const BIRTH_M=[[Hz.C5,.1],[Hz.E5,.1],[Hz.G5,.1],[Hz.C6,.15],[Hz.E6,.15],[Hz.G6,.3]]
+  .map(n=>[n[0],n[1]]);
+const Hz2={E6:1318.5,G6:1568};
+function playOK(){initAC();seq([[Hz.E5,.07],[Hz.G5,.07],[Hz.C6,.15]],.45);}
+function playErr(){initAC();seq([[Hz.A4,.09],[Hz.E4,.2]],.35);}
+function playWin(){initAC();seq([[Hz.C5,.08],[Hz.E5,.08],[Hz.G5,.08],[Hz.C6,.25],[Hz.G5,.12],[Hz.C6,.4]],.5);}
+function playFail(){initAC();seq([[Hz.C5,.18],[Hz.A4,.18],[Hz.G4,.35]],.35);}
+function playBirth(){initAC();
+  if(!AC)return;
+  const notes=[[Hz.C5,.08],[Hz.E5,.08],[Hz.G5,.08],[Hz.C6,.12],[261.6*4,.12],[Hz.G5,.08],[Hz.C6,.35]];
+  let t=AC.currentTime+.05;
+  notes.forEach(([f,d])=>{nt(f,t,d,.4);t+=d+.01;});}
 // Music starts only when player explicitly presses ▶ Музыка
 
 // ════════════════════════════════
@@ -1601,7 +1607,7 @@ function startBirth(){
   bw.className='';bw.innerHTML='';
   // Spawn cosmic stars
   spawnCosmosStars('birth-stars',80);
-  show('s-birth');sfx('abirth');
+  show('s-birth');playBirth();
   // Start rocking harder just before crack
   setTimeout(()=>{
     ew.className='crack';
@@ -1959,7 +1965,7 @@ function showFinal(){
         for(let i=0;i<5;i++){const sp=document.createElement('span');sp.className='star-a';
           sp.textContent=i<nStars(pT)?'⭐':'☆';sr.appendChild(sp);}
         document.getElementById('fgrd').textContent=strs(pT);
-        sfx('aend');playWin();confetti();show('s-final');});
+        playWin();confetti();show('s-final');});
   }else{
     document.getElementById('final-fail-msg').innerHTML=
       `${PETS[G.pi].e} <b>${G.pet}</b> не вырос... 😢<br>Тамагочи уснул в яйце.`;
